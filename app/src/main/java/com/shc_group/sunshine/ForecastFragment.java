@@ -79,7 +79,7 @@ public class ForecastFragment extends Fragment {
         int id = item.getItemId();
 
         if (id == R.id.refresh) {
-            new FetchWeatherTask().execute();
+            new FetchWeatherTask().execute("10018");
             return true;
         }
 
@@ -189,7 +189,10 @@ public class ForecastFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... params) {
-            return getWeatherJSON(weatherURI, "10018");
+            if(params == null){
+                return "No Parameters";
+            }
+            return getWeatherJSON(weatherURI, params[0]);
         }
 
         @Override
