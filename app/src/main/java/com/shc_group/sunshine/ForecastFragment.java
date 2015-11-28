@@ -1,5 +1,6 @@
 package com.shc_group.sunshine;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -63,6 +65,18 @@ public class ForecastFragment extends Fragment {
         //Initializes the ListView through ButterKnife
         ButterKnife.bind(this, view);
         forecastListView.setAdapter(weatherAdapter);
+        forecastListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                if(forecastListView.getItemAtPosition(position) instanceof String) {
+                    String details = (String) forecastListView.getItemAtPosition(position);
+                    Intent intent = new Intent(getContext(),DetailActivity.class);
+                    intent.putExtra("details",details);
+                    startActivity(intent);
+                }
+            }
+        });
 
         return view;
     }
