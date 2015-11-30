@@ -1,9 +1,11 @@
 package com.shc_group.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -23,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +40,7 @@ import butterknife.ButterKnife;
  */
 public class ForecastFragment extends Fragment {
     private final static String LOG_TAG_FRAGMENT = ForecastFragment.class.getSimpleName();
-
+    private ArrayAdapter<String> weatherAdapter;
     //Used to find view without having to cast Object
     @Bind(R.id.listview_forecast)
     protected ListView forecastListView;
@@ -51,11 +57,11 @@ public class ForecastFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        List<String> weatherList = Arrays.asList("Today - Sunny - 83 / 66", " Tomorrow - Foggy - 70 / 45",
+        List<String> weatherList = new ArrayList<>(Arrays.asList("Today - Sunny - 83 / 66", " Tomorrow - Foggy - 70 / 45",
                 "Weds - Cloudy - 72 / 63", "Thurs - Rainy - 64 / 51", "Fri - Foggy - 70 / 46",
-                "Sat - Sunny - 76 / 60");
+                "Sat - Sunny - 76 / 60"));
 
-        ArrayAdapter<String> weatherAdapter = new ArrayAdapter<>(getContext(),
+        weatherAdapter = new ArrayAdapter<>(getContext(),
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,
                 weatherList);
@@ -69,10 +75,10 @@ public class ForecastFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                if(forecastListView.getItemAtPosition(position) instanceof String) {
+                if (forecastListView.getItemAtPosition(position) instanceof String) {
                     String details = (String) forecastListView.getItemAtPosition(position);
-                    Intent intent = new Intent(getContext(),DetailActivity.class);
-                    intent.putExtra("details",details);
+                    Intent intent = new Intent(getContext(), DetailActivity.class);
+                    intent.putExtra("details", details);
                     startActivity(intent);
                 }
             }
@@ -91,9 +97,12 @@ public class ForecastFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String zipCode = sharedPreferences.getString(getString(R.string.pref_location_key), "");
+        String days = "7";
 
         if (id == R.id.refresh) {
-            new FetchWeatherTask().execute("10018");
+            new FetchWeatherTask().execute(zipCode, days);
             return true;
         }
 
@@ -101,10 +110,11 @@ public class ForecastFragment extends Fragment {
     }
 
     private String loadApiKey() throws FileNotFoundException {
+        String apiKeyFile = "weather_api.key";
         String apikey = null;
         InputStream is = null;
         try {
-            is = getContext().getAssets().open("weather_api.key");
+            is = getContext().getAssets().open(apiKeyFile);
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
             while (reader.ready()) {
@@ -124,18 +134,17 @@ public class ForecastFragment extends Fragment {
         return apikey;
     }
 
-    public class FetchWeatherTask extends AsyncTask<String, Void, String> {
+    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         private final String weatherURI = "api.openweathermap.org";
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
 
-        private String getWeatherJSON(String weatherURI, String zipCode) {
+        private String getWeatherJSON(String weatherURI, String zipCode, String days) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             Uri.Builder builder = new Uri.Builder();
             String forecastJsonStr = null;
-
-
+            zipCode = zipCode + ",us";
             try {
 
                 builder.scheme("http")
@@ -146,8 +155,8 @@ public class ForecastFragment extends Fragment {
                         .appendEncodedPath("daily")
                         .appendQueryParameter("q", zipCode)
                         .appendQueryParameter("mode", "json")
-                        .appendQueryParameter("units", "metic")
-                        .appendQueryParameter("cnt", "7")
+                        .appendQueryParameter("units", "metric")
+                        .appendQueryParameter("cnt", days)
                         .appendQueryParameter("appid", loadApiKey());
                 Uri uri = builder.build();
                 Log.v(LOG_TAG, uri.toString());
@@ -197,21 +206,39 @@ public class ForecastFragment extends Fragment {
                     }
                 }
             }
-            Log.v(LOG_TAG, forecastJsonStr + " ");
             return forecastJsonStr;
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            if(params == null){
-                return "No Parameters";
+        protected String[] doInBackground(String... params) {
+            if (params == null) {
+                return null;
             }
-            return getWeatherJSON(weatherURI, params[0]);
+            if (params.length < 2){
+                return null;
+            }
+            if (params[1] != null && (Integer.valueOf(params[1]) == null)) {
+                Log.e(LOG_TAG, params[0] + " " + params[1]);
+                return null;
+            }
+            String forecastJSONString = getWeatherJSON(weatherURI, params[0], params[1]);
+            try {
+                return new WeatherDataParser().getWeatherDataFromJson(forecastJSONString, Integer.parseInt(params[1]));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
 
         @Override
-        protected void onPostExecute(String s) {
+        protected void onPostExecute(String[] s) {
             super.onPostExecute(s);
+            if(s != null) {
+                weatherAdapter.clear();
+                weatherAdapter.addAll(Arrays.asList(s));
+            }else{
+                Toast.makeText(getContext(), "There was a problem updating the weather", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

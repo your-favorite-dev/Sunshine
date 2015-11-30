@@ -1,5 +1,6 @@
 package com.shc_group.sunshine;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -35,10 +36,12 @@ public class DetailActivityFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        String forecastDetail = getActivity().getIntent().getExtras().getString("details");
-        ButterKnife.bind(this,view);
-        forecastDetails.setText(forecastDetail);
+        Intent intent = getActivity().getIntent();
+        if(intent !=null && intent.hasExtra("details")) {
+            String forecastDetail = getActivity().getIntent().getExtras().getString("details");
+            ButterKnife.bind(this, view);
+            forecastDetails.setText(forecastDetail);
+        }
 
     }
 }
