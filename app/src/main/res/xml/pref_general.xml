@@ -9,5 +9,18 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_location_label" />
+    <Preference
+        android:key="@string/pref_location_finder_key"
+        android:title="@string/pref_location_finder_label"
+        android:summary="@string/pref_location_finder_summary"
+        android:widgetLayout="@layout/pref_location_button"/>
+    <ListPreference
+        android:defaultValue="@string/pref_units_default_imperial"
+        android:entries="@array/pref_units_list_titles"
+        android:entryValues="@array/pref_units_list_values"
+        android:key="@string/pref_units_key"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_units_label" />
 
 </PreferenceScreen>

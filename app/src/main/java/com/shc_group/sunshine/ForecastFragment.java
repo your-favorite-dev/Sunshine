@@ -30,7 +30,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -49,6 +48,12 @@ public class ForecastFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -57,14 +62,11 @@ public class ForecastFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        List<String> weatherList = new ArrayList<>(Arrays.asList("Today - Sunny - 83 / 66", " Tomorrow - Foggy - 70 / 45",
-                "Weds - Cloudy - 72 / 63", "Thurs - Rainy - 64 / 51", "Fri - Foggy - 70 / 46",
-                "Sat - Sunny - 76 / 60"));
 
         weatherAdapter = new ArrayAdapter<>(getContext(),
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,
-                weatherList);
+                new ArrayList<String>());
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -97,12 +99,9 @@ public class ForecastFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String zipCode = sharedPreferences.getString(getString(R.string.pref_location_key), "");
-        String days = "7";
 
         if (id == R.id.refresh) {
-            new FetchWeatherTask().execute(zipCode, days);
+            updateWeather();
             return true;
         }
 
@@ -134,7 +133,15 @@ public class ForecastFragment extends Fragment {
         return apikey;
     }
 
-    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+    private void updateWeather(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String zipCode = sharedPreferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+        String days = "7";
+
+        new FetchWeatherTask().execute(zipCode, days);
+    }
+
+    protected class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         private final String weatherURI = "api.openweathermap.org";
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
@@ -144,7 +151,6 @@ public class ForecastFragment extends Fragment {
             BufferedReader reader = null;
             Uri.Builder builder = new Uri.Builder();
             String forecastJsonStr = null;
-            zipCode = zipCode + ",us";
             try {
 
                 builder.scheme("http")
@@ -153,7 +159,7 @@ public class ForecastFragment extends Fragment {
                         .appendEncodedPath("2.5")
                         .appendEncodedPath("forecast")
                         .appendEncodedPath("daily")
-                        .appendQueryParameter("q", zipCode)
+                        .appendQueryParameter("zip", zipCode)
                         .appendQueryParameter("mode", "json")
                         .appendQueryParameter("units", "metric")
                         .appendQueryParameter("cnt", days)
@@ -214,7 +220,7 @@ public class ForecastFragment extends Fragment {
             if (params == null) {
                 return null;
             }
-            if (params.length < 2){
+            if (params.length < 2) {
                 return null;
             }
             if (params[1] != null && (Integer.valueOf(params[1]) == null)) {
@@ -223,7 +229,7 @@ public class ForecastFragment extends Fragment {
             }
             String forecastJSONString = getWeatherJSON(weatherURI, params[0], params[1]);
             try {
-                return new WeatherDataParser().getWeatherDataFromJson(forecastJSONString, Integer.parseInt(params[1]));
+                return new WeatherDataParser(getContext()).getWeatherDataFromJson(forecastJSONString, Integer.parseInt(params[1]));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -233,10 +239,10 @@ public class ForecastFragment extends Fragment {
         @Override
         protected void onPostExecute(String[] s) {
             super.onPostExecute(s);
-            if(s != null) {
+            if (s != null) {
                 weatherAdapter.clear();
                 weatherAdapter.addAll(Arrays.asList(s));
-            }else{
+            } else {
                 Toast.makeText(getContext(), "There was a problem updating the weather", Toast.LENGTH_SHORT).show();
             }
         }
