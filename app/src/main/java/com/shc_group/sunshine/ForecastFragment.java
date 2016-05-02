@@ -1,7 +1,10 @@
 package com.shc_group.sunshine;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -50,13 +53,40 @@ public class ForecastFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        updateWeather();
+        Log.i(LOG_TAG_FRAGMENT, "onStart called");
+
+        try {
+            updateWeather();
+        } catch (ConnectionException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(),"There was a problem with the connection", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(LOG_TAG_FRAGMENT,"onCreate called");
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(LOG_TAG_FRAGMENT, "onPause called");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(LOG_TAG_FRAGMENT,"onResume called");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i(LOG_TAG_FRAGMENT,"onStop called");
     }
 
     @Override
@@ -99,14 +129,19 @@ public class ForecastFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
+        Log.wtf(ForecastFragment.class.getSimpleName(), "Menu Select");
         if (id == R.id.refresh) {
-            updateWeather();
+            try {
+                updateWeather();
+            } catch (ConnectionException e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(), "There is an issue with the connection", Toast.LENGTH_LONG).show();
+            }
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
+
 
     private String loadApiKey() throws FileNotFoundException {
         String apiKeyFile = "weather_api.key";
@@ -132,13 +167,29 @@ public class ForecastFragment extends Fragment {
         }
         return apikey;
     }
+    private boolean isOnline(Context context){
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
 
-    private void updateWeather(){
+    private void updateWeather() throws ConnectionException{
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String zipCode = sharedPreferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
         String days = "7";
+        if(isOnline(getContext())) {
+            new FetchWeatherTask().execute(zipCode, days);
+        }else{
+            throw new ConnectionException("There is an issue with the connection");
+        }
+    }
 
-        new FetchWeatherTask().execute(zipCode, days);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(LOG_TAG_FRAGMENT, "onDestroy Called");
+        ButterKnife.unbind(this);
     }
 
     protected class FetchWeatherTask extends AsyncTask<String, Void, String[]> {

@@ -1,12 +1,15 @@
 <resources>
     <string name="app_name">Sunshine</string>
-    <string name="action_settings">Settings</string>
-    <string name="refresh">Refresh</string>
     <string name="listview_title">Weather Forecast</string>
     <string name="title_activity_detail">DetailActivity</string>
     <string name="title_activity_del">DEL</string>
     <string name="title_activity_settings">Settings</string>
 
+    <!-- Strings related to Menu -->
+    <string name="action_settings">Settings</string>
+    <string name="refresh">Refresh</string>
+    <string name="menu_share_title">Share Weather</string>
+    <string name="menu_share_label">Share Weather</string>
     <!-- Strings related to Settings -->
 
     <!-- General settings -->

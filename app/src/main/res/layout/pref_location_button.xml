@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
+<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content" android:layout_height="wrap_content"
     android:id="@+id/locationButton"
+    android:src="@drawable/ic_action_get_location"
     android:text="@string/pref_location_button_title"
     android:onClick="getLocation">
-</Button>
+</ImageButton>
