@@ -1,4 +1,4 @@
-package com.shc_group.sunshine;
+package com.shc_group.sunshine.app;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.shc_group.sunshine.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

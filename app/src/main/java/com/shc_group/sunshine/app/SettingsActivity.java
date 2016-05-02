@@ -1,4 +1,4 @@
-package com.shc_group.sunshine;
+package com.shc_group.sunshine.app;
 
 
 import android.annotation.TargetApi;
@@ -22,6 +22,8 @@ import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.shc_group.sunshine.R;
 
 import java.util.List;
 

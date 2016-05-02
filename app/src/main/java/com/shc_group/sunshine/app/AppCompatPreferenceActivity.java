@@ -1,4 +1,4 @@
-package com.shc_group.sunshine;
+package com.shc_group.sunshine.app;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

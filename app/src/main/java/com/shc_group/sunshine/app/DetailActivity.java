@@ -1,4 +1,4 @@
-package com.shc_group.sunshine;
+package com.shc_group.sunshine.app;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.shc_group.sunshine.R;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -17,7 +19,8 @@ public class DetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Intent intent = getIntent();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if(savedInstanceState == null){
             DetailActivityFragment detailFrag = new DetailActivityFragment();

@@ -1,8 +1,10 @@
-package com.shc_group.sunshine;
+package com.shc_group.sunshine.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
+import com.shc_group.sunshine.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,10 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-
-/**
- * Created by SHC_Group on 11/24/15.
- */
 public class WeatherDataParser {
     private static final String LOG_TAG = WeatherDataParser.class.getSimpleName();
     private Context context;

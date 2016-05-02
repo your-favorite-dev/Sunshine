@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".app.MainActivity"
             android:label="@string/app_name"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar">
@@ -24,18 +24,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetailActivity"
+            android:name=".app.DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".app.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.shc_group.sunshine.MainActivity" />
+                android:value=".app.MainActivity" />
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".app.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".app.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <data android:scheme="geo" />
@@ -43,7 +43,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.shc_group.sunshine.MainActivity" />
+                android:value=".app.MainActivity" />
         </activity>
     </application>
 

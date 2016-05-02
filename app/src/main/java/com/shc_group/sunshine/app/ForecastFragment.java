@@ -1,4 +1,4 @@
-package com.shc_group.sunshine;
+package com.shc_group.sunshine.app;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +21,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.shc_group.sunshine.R;
+import com.shc_group.sunshine.exceptions.ConnectionException;
 
 import org.json.JSONException;
 
@@ -170,8 +173,9 @@ public class ForecastFragment extends Fragment {
     private boolean isOnline(Context context){
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-        return isConnected;
+
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
     }
 
     private void updateWeather() throws ConnectionException{
@@ -226,7 +230,7 @@ public class ForecastFragment extends Fragment {
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder sBuilder = new StringBuilder();
                 if (inputStream == null) {
                     // Nothing to do.
                     forecastJsonStr = null;
@@ -237,15 +241,15 @@ public class ForecastFragment extends Fragment {
                 while (reader != null && (line = reader.readLine()) != null) {
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                     // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line).append("\n");
+                    // sBuilder for debugging.
+                    sBuilder.append(line).append("\n");
                 }
 
-                if (buffer.length() == 0) {
+                if (sBuilder.length() == 0) {
                     // Stream was empty.  No point in parsing.
                     forecastJsonStr = null;
                 }
-                forecastJsonStr = buffer.toString();
+                forecastJsonStr = sBuilder.toString();
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 // If the code didn't successfully get the weather data, there's no point in attempting
