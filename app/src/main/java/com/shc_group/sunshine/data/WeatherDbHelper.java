@@ -7,12 +7,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import static com.shc_group.sunshine.data.WeatherContract.LocationEntry;
 import static com.shc_group.sunshine.data.WeatherContract.WeatherEntry;
 
-/**
- * Created by SHC_Group on 4/11/16.
- */
 public class WeatherDbHelper extends SQLiteOpenHelper {
-    private final static int DATABASE_VERSION = 1;
     protected static final String DATABASE_NAME = "weather.db";
+    private final static int DATABASE_VERSION = 1;
 
     public WeatherDbHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);

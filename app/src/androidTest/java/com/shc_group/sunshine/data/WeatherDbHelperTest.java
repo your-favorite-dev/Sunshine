@@ -18,9 +18,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
-/**
- * Created by SHC_Group on 4/12/16.
- */
+
 @RunWith(AndroidJUnit4.class)
 public class WeatherDbHelperTest {
 
@@ -111,6 +109,7 @@ public class WeatherDbHelperTest {
 
         // Sixth Step: Close cursor and database
         weatherCursor.close();
+        db.delete(WeatherContract.LocationEntry.TABLE_NAME, WeatherContract.LocationEntry._ID + "=" + weatherRowId, null);
         dbHelper.close();
     }
     public long insertLocation() {
