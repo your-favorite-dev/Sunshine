@@ -5,8 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
-
-import java.util.GregorianCalendar;
+import android.text.format.Time;
 
 public class WeatherContract {
     public static final String CONTENT_AUTHORITY = "com.shc_group.sunshine.app";
@@ -14,12 +13,15 @@ public class WeatherContract {
 
     public static final String PATH_WEATHER = "weather";
     public static final String PATH_LOCATION = "location";
+    public static final String LOG_TAG = WeatherContract.class.getSimpleName();
 
 
-    public static long normalizeDate(long starDate){
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTimeInMillis(starDate);
-        return calendar.getTimeInMillis();
+    public static long normalizeDate(long startDate) {
+
+        Time time = new Time();
+        time.set(startDate);
+        int julianDay = Time.getJulianDay(startDate, time.gmtoff);
+        return time.setJulianDay(julianDay);
     }
 
     public static final class LocationEntry implements BaseColumns{

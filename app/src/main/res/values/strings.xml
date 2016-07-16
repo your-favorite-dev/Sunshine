@@ -48,4 +48,6 @@
     <string name="pref_location_finder_summary">Find your preferred weather location on the map</string>
 
     <string name="content_authority">com.shc_group.sunshine.app</string>
+    <string name="pref_units_metric">C</string>
+    <string name="pref_units_imperial">F</string>
 </resources>
