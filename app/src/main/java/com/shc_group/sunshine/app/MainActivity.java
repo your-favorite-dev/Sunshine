@@ -3,22 +3,41 @@ package com.shc_group.sunshine.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.shc_group.sunshine.R;
+import com.shc_group.sunshine.utils.Utility;
 
 public class MainActivity extends AppCompatActivity {
+
+    private String mLocation;
+    private String FORECASTFRAGMENT_TAG = "FFTAG";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new ForecastFragment(), FORECASTFRAGMENT_TAG)
+                    .commit();
+        }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String preferredLocation = Utility.getPreferredLocation(this);
+        if (preferredLocation != null && !preferredLocation.equals(getmLocation())) {
+
+            ForecastFragment forecastFragment = (ForecastFragment) getSupportFragmentManager()
+                    .findFragmentByTag(FORECASTFRAGMENT_TAG);
+            forecastFragment.onLocationChanged();
+            setmLocation(preferredLocation);
+        }
     }
 
     @Override
@@ -43,5 +62,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public String getmLocation() {
+        return mLocation;
+    }
+
+    public void setmLocation(String mLocation) {
+        this.mLocation = mLocation;
     }
 }

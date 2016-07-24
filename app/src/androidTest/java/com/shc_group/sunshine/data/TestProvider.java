@@ -99,6 +99,7 @@ public class TestProvider {
         deleteAllRecordsFromProvider();
     }
 
+
     @Test
     public void testProviderRegistry() {
         PackageManager pm = mContext.getPackageManager();

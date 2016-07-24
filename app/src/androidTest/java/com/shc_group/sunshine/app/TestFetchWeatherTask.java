@@ -33,7 +33,7 @@ public class TestFetchWeatherTask {
                 WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
                 new String[]{ADD_LOCATION_SETTING});
 
-        FetchWeatherTask fwt = new FetchWeatherTask(getContext(), null);
+        FetchWeatherTask fwt = new FetchWeatherTask(getContext());
         WeatherDataParser wdp = new WeatherDataParser(getContext());
         long locationId = wdp.addLocation(ADD_LOCATION_SETTING, ADD_LOCATION_CITY,
                 ADD_LOCATION_LAT, ADD_LOCATION_LON);
@@ -60,7 +60,7 @@ public class TestFetchWeatherTask {
                     null);
 
             // these match the indices of the projection
-            if (locationCursor.moveToFirst()) {
+            if (locationCursor != null && locationCursor.moveToFirst()) {
                 assertEquals("Error: the queried value of locationId does not match the returned value" +
                         "from addLocation", locationCursor.getLong(0), locationId);
                 assertEquals("Error: the queried value of location setting is incorrect",
